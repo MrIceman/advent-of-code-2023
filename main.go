@@ -10,7 +10,6 @@ import (
 var input string
 
 func main() {
-	// day 1 - answer is 53268
 	splitInput := strings.Split(input, "\n")
 	day1.CalculateSum(splitInput)
 }
