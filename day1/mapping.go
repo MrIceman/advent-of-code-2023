@@ -40,49 +40,29 @@ func extractNumbers(s string) int {
 }
 
 func leftSearch(s string) int {
-	found := -1
-	var strBuffer []string
-	splitString := strings.Split(s, "")
-
-	for strIdx := range splitString {
-		if n, ok := isNumber(splitString[strIdx]); ok {
-			found = n
-			return found
-		}
-	numbersLoop:
-		for _, number := range numberList {
-			hitIndex := strIdx
-			// we reached the end
-			if hitIndex > len(splitString)-3 {
-				break numbersLoop
-			}
-			for _, n := range strings.Split(number, "") {
-				if splitString[hitIndex] == n {
-					strBuffer = append(strBuffer, splitString[hitIndex])
-					resultString := strings.Join(strBuffer, "")
-					if resultString == number {
-						found = slices.Index(numberList, resultString) + 1
-						return found
-					}
-					hitIndex += 1
-				} else {
-					// chars don't match, this number can not be included
-					strBuffer = []string{}
-					continue numbersLoop
-				}
-			}
-		}
-	}
-
-	return found
+	return search(s, 0, func(i int) bool {
+		return i == len(s)-1
+	}, func(i int) int {
+		return i + 1
+	})
 }
 
 func rightSearch(s string) int {
+	return search(s, len(s)-1, func(i int) bool {
+		return i == 0
+	}, func(i int) int {
+		return i - 1
+	})
+}
+
+func search(s string, start int, stopFn func(int) bool, nextFn func(int) int) int {
 	found := -1
 	var strBuffer []string
 	splitString := strings.Split(s, "")
-
-	for strIdx := len(splitString) - 1; strIdx >= 0; strIdx-- {
+	stopped := false
+	strIdx := start
+	for !stopped {
+		stopped = stopFn(strIdx)
 		if n, ok := isNumber(splitString[strIdx]); ok {
 			found = n
 			return found
@@ -110,6 +90,7 @@ func rightSearch(s string) int {
 				}
 			}
 		}
+		strIdx = nextFn(strIdx)
 	}
 
 	return found
