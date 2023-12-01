@@ -22,32 +22,49 @@ func main() {
 }
 
 func parseToInt(s string) int {
-	var ints []string
+	// a map which holds the indexes of each found numbers, the result is then a concatenation of the first and the last found number
+	indexMap := map[int]int{}
 
-	for _, c := range strings.Split(s, "") {
-		if ok := isNumber(c); ok {
-			ints = append(ints, c)
+	for idx, c := range strings.Split(s, "") {
+		if n, ok := isNumber(c); ok {
+			indexMap[idx] = n
 		}
 	}
 
-	if len(ints) == 0 {
+	if len(indexMap) == 0 {
 		return 0
 	}
 
-	if len(ints) == 1 {
-		return parseStringNumberPairToInt(ints[0], ints[0])
+	if len(indexMap) == 1 {
+		return parseStringNumberPairToInt(indexMap[0], indexMap[0])
 	}
-	return parseStringNumberPairToInt(ints[0], ints[len(ints)-1])
+	return parseStringNumberPairToInt(getLowestAndHighestValuesFromIndexMap(indexMap))
 }
 
-func parseStringNumberPairToInt(x, y string) int {
-	res, _ := strconv.Atoi(fmt.Sprintf("%s%s", x, y))
+func isNumber(s string) (int, bool) {
+	n, err := strconv.Atoi(s)
+	return n, err == nil
+
+}
+
+func parseStringNumberPairToInt(x, y int) int {
+	res, _ := strconv.Atoi(fmt.Sprintf("%d%d", x, y))
 
 	return res
 }
 
-func isNumber(s string) bool {
-	_, err := strconv.Atoi(s)
-	return err == nil
-
+func getLowestAndHighestValuesFromIndexMap(indexMap map[int]int) (lowestValue, highestValue int) {
+	// initialize both values first to the first index
+	lowestKey, highestKey := 0, 0
+	for k, v := range indexMap {
+		if v < lowestValue {
+			lowestKey = k
+			lowestValue = v
+		}
+		if v > highestValue {
+			highestKey = k
+			highestValue = k
+		}
+	}
+	return lowestKey, highestKey
 }
