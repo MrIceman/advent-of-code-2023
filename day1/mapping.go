@@ -1,7 +1,9 @@
-package main
+package day1
 
 import (
+	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -29,12 +31,24 @@ var numberList = []string{
 	nine,
 }
 
-func extractNumbersFromString(s string) map[int]int {
-	result := map[int]int{}
+func extractNumbers(s string) int {
+	leftValue := leftSearch(s)
+	rightValue := rightSearch(s)
+	i, _ := strconv.Atoi(fmt.Sprintf("%d%d", leftValue, rightValue))
+
+	return i
+}
+
+func leftSearch(s string) int {
+	found := -1
 	var strBuffer []string
 	splitString := strings.Split(s, "")
-strLoop:
+
 	for strIdx := range splitString {
+		if n, ok := isNumber(splitString[strIdx]); ok {
+			found = n
+			return found
+		}
 	numbersLoop:
 		for _, number := range numberList {
 			hitIndex := strIdx
@@ -47,10 +61,8 @@ strLoop:
 					strBuffer = append(strBuffer, splitString[hitIndex])
 					resultString := strings.Join(strBuffer, "")
 					if resultString == number {
-						// the numbers are ordered so we can safely assume that the
-						// index of the number in the list is equivalent to the value - 1
-						result[strIdx] = slices.Index(numberList, resultString) + 1
-						continue strLoop
+						found = slices.Index(numberList, resultString) + 1
+						return found
 					}
 					hitIndex += 1
 				} else {
@@ -62,5 +74,48 @@ strLoop:
 		}
 	}
 
-	return result
+	return found
+}
+
+func rightSearch(s string) int {
+	found := -1
+	var strBuffer []string
+	splitString := strings.Split(s, "")
+
+	for strIdx := len(splitString) - 1; strIdx >= 0; strIdx-- {
+		if n, ok := isNumber(splitString[strIdx]); ok {
+			found = n
+			return found
+		}
+	numbersLoop:
+		for _, number := range numberList {
+			hitIndex := strIdx
+			// we reached the end
+			if hitIndex > len(splitString)-3 {
+				break numbersLoop
+			}
+			for _, n := range strings.Split(number, "") {
+				if splitString[hitIndex] == n {
+					strBuffer = append(strBuffer, splitString[hitIndex])
+					resultString := strings.Join(strBuffer, "")
+					if resultString == number {
+						found = slices.Index(numberList, resultString) + 1
+						return found
+					}
+					hitIndex += 1
+				} else {
+					// chars don't match, this number can not be included
+					strBuffer = []string{}
+					continue numbersLoop
+				}
+			}
+		}
+	}
+
+	return found
+}
+
+func isNumber(s string) (int, bool) {
+	n, err := strconv.Atoi(s)
+	return n, err == nil
 }
