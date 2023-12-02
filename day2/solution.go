@@ -6,3 +6,7 @@ func GetResultPart1(input []string) int {
 
 	return result
 }
+
+func GetResultPart2(input []string) int {
+	return GetAddedPowerOfSets(MustMapInputToGames(input))
+}

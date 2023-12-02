@@ -20,8 +20,11 @@ func main() {
 
 func runD2() {
 	splitInput := strings.Split(input2, "\n")
-	res := day2.GetResultPart1(splitInput)
-	log.Printf("total sum id is %d", res)
+	res1 := day2.GetResultPart1(splitInput)
+	log.Printf("total sum id is %d", res1)
+
+	res2 := day2.GetResultPart2(splitInput)
+	log.Printf("power of sets is is %d", res2)
 }
 
 func runD1() {
